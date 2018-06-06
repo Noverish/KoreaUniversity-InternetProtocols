@@ -1,7 +1,7 @@
 .idea/
 
 
-# Created by https://www.gitignore.io/api/java,macos,gradle,android,androidstudio
+# Created by https://www.gitignore.io/api/java,macos,gradle,kotlin,android,androidstudio
 
 ### Android ###
 # Built application files
@@ -184,6 +184,19 @@ fabric.properties
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 
+### Kotlin ###
+# Compiled class file
+
+# Log file
+
+# BlueJ files
+
+# Mobile Tools for Java (J2ME)
+
+# Package Files #
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+
 ### macOS ###
 *.DS_Store
 .AppleDouble
@@ -224,4 +237,4 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 
-# End of https://www.gitignore.io/api/java,macos,gradle,android,androidstudio
+# End of https://www.gitignore.io/api/java,macos,gradle,kotlin,android,androidstudio
