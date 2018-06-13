@@ -51,6 +51,7 @@ public class PDUValue implements CustomBERSerializable {
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
         byte type = is.getBuffer().array()[(int) is.getPosition()];
+        System.out.println("type : " + type);
 
         switch (type) {
             case BER.INTEGER: {

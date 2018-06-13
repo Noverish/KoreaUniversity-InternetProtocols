@@ -8,7 +8,10 @@ import java.net.SocketTimeoutException;
 
 public class UDPHelper {
 
-    public static byte[] sendAndReceive(String host, int port, byte[] data) throws IOException {
+    private static final int DEFAULT_RECEIVE_BUFFER_SIZE = 300;
+    private static final int DEFAULT_TIMEOUT = 1000;
+
+    public static byte[] simpleSendAndReceive(String host, int port, byte[] data) throws IOException {
         DatagramSocket socket = new DatagramSocket();
 
         byte[] tmp = sendAndReceive(socket, host, port, data);
@@ -19,7 +22,7 @@ public class UDPHelper {
     }
 
     public static byte[] sendAndReceive(DatagramSocket socket, String host, int port, byte[] data) throws IOException {
-        socket.setSoTimeout(1000);
+        socket.setSoTimeout(DEFAULT_TIMEOUT);
 
         InetAddress ia = InetAddress.getByName(host);
         DatagramPacket dp = new DatagramPacket(data, data.length, ia, port);

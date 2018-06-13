@@ -19,7 +19,7 @@ public class SNMPHelper {
         ArrayUtil.print(bytes);
         System.out.println(packet);
 
-        byte[] receivedBytes = UDPHelper.sendAndReceive(host, port, bytes);
+        byte[] receivedBytes = UDPHelper.simpleSendAndReceive(host, port, bytes);
         ArrayUtil.print(receivedBytes);
 
         BERInputStream is = new BERInputStream(ByteBuffer.wrap(receivedBytes));
@@ -40,6 +40,11 @@ public class SNMPHelper {
         System.out.println(packet);
 
         byte[] receivedBytes = UDPHelper.sendAndReceive(socket, host, port, bytes);
+        System.out.println("asdfasdf");
+        System.out.println("asdfasdf");
+        System.out.println("asdfasdf");
+        System.out.println("asdfasdf");
+        System.out.println("asdfasdf");
         ArrayUtil.print(receivedBytes);
 
         BERInputStream is = new BERInputStream(ByteBuffer.wrap(receivedBytes));
