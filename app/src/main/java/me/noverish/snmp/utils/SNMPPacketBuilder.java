@@ -3,33 +3,33 @@ package me.noverish.snmp.utils;
 
 import java.util.ArrayList;
 
-import me.noverish.snmp.packet.pdu.PDUOID;
-import me.noverish.snmp.packet.pdu.PDUPacket;
+import me.noverish.snmp.packet.pdu.PDUVariableOID;
+import me.noverish.snmp.packet.pdu.PDU;
 import me.noverish.snmp.packet.pdu.PDUType;
-import me.noverish.snmp.packet.pdu.PDUValue;
+import me.noverish.snmp.packet.pdu.PDUVariableValue;
 import me.noverish.snmp.packet.pdu.PDUVariable;
 import me.noverish.snmp.packet.snmp.SNMPCommunity;
-import me.noverish.snmp.packet.snmp.SNMPPacket;
+import me.noverish.snmp.packet.snmp.SNMP;
 import me.noverish.snmp.packet.snmp.SNMPVersion;
 
 public class SNMPPacketBuilder {
-    public static SNMPPacket create(String communityStr, PDUType pduType, int requestId, String oidStr, Object obj) {
-        PDUOID oid = new PDUOID(oidStr);
-        PDUValue value;
+    public static SNMP create(String communityStr, PDUType pduType, int requestId, String oidStr, Object obj) {
+        PDUVariableOID oid = new PDUVariableOID(oidStr);
+        PDUVariableValue value;
         if (obj instanceof Integer)
-            value = new PDUValue((Integer) obj);
+            value = new PDUVariableValue((Integer) obj);
         else
-            value = new PDUValue();
+            value = new PDUVariableValue();
 
         PDUVariable variable = new PDUVariable(oid, value);
         ArrayList<PDUVariable> variables = new ArrayList<>();
         variables.add(variable);
 
-        PDUPacket pdu = new PDUPacket(pduType, requestId, 0, 0, variables);
+        PDU pdu = new PDU(pduType, requestId, 0, 0, variables);
 
         SNMPCommunity community = new SNMPCommunity(communityStr);
         SNMPVersion version = SNMPVersion.v2c;
 
-        return new SNMPPacket(version, community, pdu);
+        return new SNMP(version, community, pdu);
     }
 }

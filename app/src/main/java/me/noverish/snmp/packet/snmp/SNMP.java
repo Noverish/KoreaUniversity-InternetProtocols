@@ -6,19 +6,20 @@ import org.snmp4j.asn1.BERInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import me.noverish.snmp.packet.pdu.PDUPacket;
+import me.noverish.snmp.packet.pdu.PDU;
+import me.noverish.snmp.packet.pdu.PDUVariable;
 import me.noverish.snmp.utils.CustomBERSerializable;
 
-public class SNMPPacket implements CustomBERSerializable {
+public class SNMP implements CustomBERSerializable {
     public SNMPVersion version;
     public SNMPCommunity community;
-    public PDUPacket pdu;
+    public PDU pdu;
 
-    public SNMPPacket() {
+    public SNMP() {
 
     }
 
-    public SNMPPacket(SNMPVersion version, SNMPCommunity community, PDUPacket pdu) {
+    public SNMP(SNMPVersion version, SNMPCommunity community, PDU pdu) {
         this.version = version;
         this.community = community;
         this.pdu = pdu;
@@ -49,7 +50,7 @@ public class SNMPPacket implements CustomBERSerializable {
         String communityStr = new String(BER.decodeString(is, communityType));
         community = new SNMPCommunity(communityStr);
 
-        pdu = new PDUPacket();
+        pdu = new PDU();
         pdu.decodeBER(is);
     }
 
@@ -76,5 +77,13 @@ public class SNMPPacket implements CustomBERSerializable {
                 "  \"community\": " + community.value + "\n" +
                 pdu.toString() +
                 "}";
+    }
+
+    public String toSimpleString() {
+        PDUVariable variable = pdu.variables.get(0);
+        String oid = variable.oid.toString();
+        String value = variable.value.toString();
+
+        return oid + " = " + value;
     }
 }

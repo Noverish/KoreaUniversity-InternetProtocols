@@ -7,15 +7,15 @@ import java.net.DatagramSocket;
 import java.util.Random;
 
 import me.noverish.snmp.MainActivity;
-import me.noverish.snmp.packet.pdu.PDUOID;
+import me.noverish.snmp.packet.pdu.PDUVariableOID;
 import me.noverish.snmp.packet.pdu.PDUType;
-import me.noverish.snmp.packet.snmp.SNMPPacket;
+import me.noverish.snmp.packet.snmp.SNMP;
 import me.noverish.snmp.utils.SNMPHelper;
 import me.noverish.snmp.utils.SNMPPacketBuilder;
 
-public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMPPacket, SNMPPacket> {
+public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
 
-    private SNMPPacket packet;
+    private SNMP packet;
     private SNMPReceiveListener listener;
 
     public SNMPWalkAsyncTask() {
@@ -31,21 +31,21 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMPPacket, SNMPPacket> {
     }
 
     @Override
-    protected SNMPPacket doInBackground(Void... voids) {
+    protected SNMP doInBackground(Void... voids) {
         try {
             DatagramSocket socket = new DatagramSocket();
 
             while (true) {
-                SNMPPacket received = SNMPHelper.sendAndReceive(socket, MainActivity.HOST, MainActivity.PORT, packet);
+                SNMP received = SNMPHelper.sendAndReceive(socket, MainActivity.HOST, MainActivity.PORT, packet);
 
-                onProgressUpdate(received);
+                publishProgress(received);
 
                 if (received.pdu.variables.get(0).value.isEnd != null) {
                     return null;
                 }
 
                 packet.pdu.requestId += 1;
-                packet.pdu.variables.get(0).oid = new PDUOID(received.pdu.variables.get(0).oid.toString());
+                packet.pdu.variables.get(0).oid = new PDUVariableOID(received.pdu.variables.get(0).oid.toString());
             }
         } catch (IOException ex) {
             return null;
@@ -53,8 +53,8 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMPPacket, SNMPPacket> {
     }
 
     @Override
-    protected void onProgressUpdate(SNMPPacket... packets) {
-        SNMPPacket packet = packets[0];
+    protected void onProgressUpdate(SNMP... packets) {
+        SNMP packet = packets[0];
 
         if (listener != null)
             if (packet != null)

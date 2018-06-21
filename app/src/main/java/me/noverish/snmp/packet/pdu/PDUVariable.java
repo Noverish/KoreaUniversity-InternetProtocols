@@ -9,14 +9,14 @@ import java.io.OutputStream;
 import me.noverish.snmp.utils.CustomBERSerializable;
 
 public class PDUVariable implements CustomBERSerializable {
-    public PDUOID oid;
-    public PDUValue value;
+    public PDUVariableOID oid;
+    public PDUVariableValue value;
 
     public PDUVariable() {
 
     }
 
-    public PDUVariable(PDUOID oid, PDUValue value) {
+    public PDUVariable(PDUVariableOID oid, PDUVariableValue value) {
         this.oid = oid;
         this.value = value;
     }
@@ -36,10 +36,10 @@ public class PDUVariable implements CustomBERSerializable {
         int length = BER.decodeHeader(is, type);
         long startPos = is.getPosition();
 
-        oid = new PDUOID();
+        oid = new PDUVariableOID();
         oid.decodeBER(is);
 
-        value = new PDUValue();
+        value = new PDUVariableValue();
         value.decodeBER(is);
     }
 

@@ -9,15 +9,15 @@ import java.util.ArrayList;
 
 import me.noverish.snmp.utils.CustomBERSerializable;
 
-public class PDUOID implements CustomBERSerializable {
+public class PDUVariableOID implements CustomBERSerializable {
 
     public int[] value;
 
-    public PDUOID() {
+    public PDUVariableOID() {
 
     }
 
-    public PDUOID(String oid) {
+    public PDUVariableOID(String oid) {
         String[] numbers = oid.split("\\.");
         value = new int[numbers.length];
 

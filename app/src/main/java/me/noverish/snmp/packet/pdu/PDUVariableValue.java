@@ -9,20 +9,20 @@ import java.io.OutputStream;
 import me.noverish.snmp.utils.CustomBERSerializable;
 import me.noverish.snmp.utils.Utils;
 
-public class PDUValue implements CustomBERSerializable {
+public class PDUVariableValue implements CustomBERSerializable {
     public Integer intValue = null;
     public String stringValue = null;
-    public PDUOID oidValue = null;
+    public PDUVariableOID oidValue = null;
     public Long timeTickValue = null;
     public Long gauge32Value = null;
     public Long counter32Value = null;
     public Boolean isEnd = null;
 
-    public PDUValue() {
+    public PDUVariableValue() {
 
     }
 
-    public PDUValue(Integer intValue) {
+    public PDUVariableValue(Integer intValue) {
         this.intValue = intValue;
     }
 
@@ -51,7 +51,7 @@ public class PDUValue implements CustomBERSerializable {
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
         byte type = is.getBuffer().array()[(int) is.getPosition()];
-        System.out.println("type : " + type);
+//        System.out.println("type : " + type);
 
         switch (type) {
             case BER.INTEGER: {
@@ -65,7 +65,7 @@ public class PDUValue implements CustomBERSerializable {
                 break;
             }
             case BER.OID: {
-                oidValue = new PDUOID();
+                oidValue = new PDUVariableOID();
                 oidValue.decodeBER(is);
                 break;
             }

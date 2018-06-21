@@ -10,18 +10,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class PDUPacket implements CustomBERSerializable {
+public class PDU implements CustomBERSerializable {
     public PDUType type;
     public int requestId;
     public int errorStatus = 0;
     public int errorIndex = 0;
     public ArrayList<PDUVariable> variables;
 
-    public PDUPacket() {
+    public PDU() {
 
     }
 
-    public PDUPacket(PDUType type, int requestId, int errorStatus, int errorIndex, ArrayList<PDUVariable> variables) {
+    public PDU(PDUType type, int requestId, int errorStatus, int errorIndex, ArrayList<PDUVariable> variables) {
         this.type = type;
         this.requestId = requestId;
         this.errorStatus = errorStatus;

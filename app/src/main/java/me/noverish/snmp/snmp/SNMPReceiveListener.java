@@ -1,7 +1,7 @@
 package me.noverish.snmp.snmp;
 
-import me.noverish.snmp.packet.snmp.SNMPPacket;
+import me.noverish.snmp.packet.snmp.SNMP;
 
 public interface SNMPReceiveListener {
-    void onSNMPPacketReceived(SNMPPacket packet);
+    void onSNMPPacketReceived(SNMP packet);
 }

@@ -1,6 +1,5 @@
 package me.noverish.snmp;
 
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,18 +7,11 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-
-import me.noverish.snmp.packet.pdu.PDUOID;
-import me.noverish.snmp.packet.pdu.PDUType;
-import me.noverish.snmp.packet.snmp.SNMPPacket;
+import me.noverish.snmp.packet.snmp.SNMP;
 import me.noverish.snmp.snmp.SNMPGetAsyncTask;
 import me.noverish.snmp.snmp.SNMPReceiveListener;
 import me.noverish.snmp.snmp.SNMPSetAsyncTask;
 import me.noverish.snmp.snmp.SNMPWalkAsyncTask;
-import me.noverish.snmp.utils.SNMPHelper;
-import me.noverish.snmp.utils.SNMPPacketBuilder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,18 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        new AsyncTask<Void, Void, Void>() {
-//            @Override
-//            protected Void doInBackground(Void... voids) {
-//                try {
-//                    testWalk();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                return null;
-//            }
-//        }.execute();
 
         View getBtn = findViewById(R.id.get_btn);
         View setBtn = findViewById(R.id.set_btn);
@@ -84,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         new SNMPGetAsyncTask(oid)
                 .setListener(new SNMPReceiveListener() {
                     @Override
-                    public void onSNMPPacketReceived(SNMPPacket packet) {
+                    public void onSNMPPacketReceived(SNMP packet) {
                         resultTextView.setText(packet.toString());
                     }
                 })
@@ -98,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         new SNMPSetAsyncTask(oid, value)
                 .setListener(new SNMPReceiveListener() {
                     @Override
-                    public void onSNMPPacketReceived(SNMPPacket packet) {
+                    public void onSNMPPacketReceived(SNMP packet) {
                         resultTextView.setText(packet.toString());
                     }
                 })
@@ -106,46 +86,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onWalkBtnClicked() {
+        resultTextView.setText("");
+
         new SNMPWalkAsyncTask()
                 .setListener(new SNMPReceiveListener() {
                     @Override
-                    public void onSNMPPacketReceived(final SNMPPacket packet) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                String tmp = resultTextView.getText().toString();
-                                tmp += packet.toString() + "\n";
-                                resultTextView.setText(tmp);
-
-//                                scrollView.scrollTo(0, Integer.MAX_VALUE);
-                            }
-                        });
-
+                    public void onSNMPPacketReceived(final SNMP packet) {
+                        String tmp = resultTextView.getText().toString();
+                        tmp += packet.toSimpleString() + "\n";
+                        resultTextView.setText(tmp);
+                        scrollView.fullScroll(View.FOCUS_DOWN);
                     }
                 })
                 .execute();
-    }
-
-    public void testWalk() throws IOException {
-        DatagramSocket socket = new DatagramSocket();
-
-        SNMPPacket packet = SNMPPacketBuilder.create(
-                COMMUNITY_READ,
-                PDUType.GET_NEXT_REQUEST,
-                0x12345678,
-                "1.3.6.1.2.1",
-                null);
-
-        while (true) {
-            SNMPPacket received = SNMPHelper.sendAndReceive(socket, HOST, PORT, packet);
-
-            if (received.pdu.variables.get(0).value.isEnd != null) {
-                System.out.println("ENDEND!!");
-                return;
-            }
-
-            packet.pdu.requestId += 1;
-            packet.pdu.variables.get(0).oid = new PDUOID(received.pdu.variables.get(0).oid.toString());
-        }
     }
 }

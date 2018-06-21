@@ -2,20 +2,19 @@ package me.noverish.snmp.snmp;
 
 import android.os.AsyncTask;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.util.Random;
 
 import me.noverish.snmp.MainActivity;
 import me.noverish.snmp.packet.pdu.PDUType;
-import me.noverish.snmp.packet.snmp.SNMPPacket;
+import me.noverish.snmp.packet.snmp.SNMP;
 import me.noverish.snmp.utils.SNMPHelper;
 import me.noverish.snmp.utils.SNMPPacketBuilder;
 
-public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMPPacket> {
+public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
 
     private SNMPReceiveListener listener;
-    private SNMPPacket packet;
+    private SNMP packet;
 
     public SNMPGetAsyncTask(String oid) {
         int requestId = new Random().nextInt(0x7FFFFFFF);
@@ -30,7 +29,7 @@ public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMPPacket> {
     }
 
     @Override
-    protected SNMPPacket doInBackground(Void... voids) {
+    protected SNMP doInBackground(Void... voids) {
         try {
             return SNMPHelper.sendAndReceive(MainActivity.HOST, MainActivity.PORT, packet);
         } catch (IOException ex) {
@@ -39,7 +38,7 @@ public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMPPacket> {
     }
 
     @Override
-    protected void onPostExecute(SNMPPacket packet) {
+    protected void onPostExecute(SNMP packet) {
         if (listener != null)
             if (packet != null)
                 listener.onSNMPPacketReceived(packet);

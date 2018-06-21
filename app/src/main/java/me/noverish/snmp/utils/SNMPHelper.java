@@ -4,54 +4,39 @@ import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.asn1.BEROutputStream;
 
 import me.noverish.snmp.net.UDPHelper;
-import me.noverish.snmp.packet.snmp.SNMPPacket;
+import me.noverish.snmp.packet.snmp.SNMP;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 
 public class SNMPHelper {
-    public static SNMPPacket sendAndReceive(String host, int port, SNMPPacket packet) throws IOException {
-        BEROutputStream os = new BEROutputStream(ByteBuffer.allocate(packet.getBERLength()));
-        packet.encodeBER(os);
-        byte[] bytes = os.getBuffer().array();
+    public static SNMP sendAndReceive(String host, int port, SNMP packet) throws IOException {
+        DatagramSocket socket = new DatagramSocket();
 
-        ArrayUtil.print(bytes);
-        System.out.println(packet);
+        SNMP receivedPacket = sendAndReceive(socket, host, port, packet);
 
-        byte[] receivedBytes = UDPHelper.simpleSendAndReceive(host, port, bytes);
-        ArrayUtil.print(receivedBytes);
-
-        BERInputStream is = new BERInputStream(ByteBuffer.wrap(receivedBytes));
-        SNMPPacket receivedPacket = new SNMPPacket();
-        receivedPacket.decodeBER(is);
-
-        System.out.println(receivedPacket);
+        socket.close();
 
         return receivedPacket;
     }
 
-    public static SNMPPacket sendAndReceive(DatagramSocket socket, String host, int port, SNMPPacket packet) throws IOException {
+    public static SNMP sendAndReceive(DatagramSocket socket, String host, int port, SNMP packet) throws IOException {
         BEROutputStream os = new BEROutputStream(ByteBuffer.allocate(packet.getBERLength()));
         packet.encodeBER(os);
         byte[] bytes = os.getBuffer().array();
 
-        ArrayUtil.print(bytes);
-        System.out.println(packet);
+//        ArrayUtil.print(bytes);
+//        System.out.println(packet);
 
         byte[] receivedBytes = UDPHelper.sendAndReceive(socket, host, port, bytes);
-        System.out.println("asdfasdf");
-        System.out.println("asdfasdf");
-        System.out.println("asdfasdf");
-        System.out.println("asdfasdf");
-        System.out.println("asdfasdf");
-        ArrayUtil.print(receivedBytes);
+//        ArrayUtil.print(receivedBytes);
 
         BERInputStream is = new BERInputStream(ByteBuffer.wrap(receivedBytes));
-        SNMPPacket receivedPacket = new SNMPPacket();
+        SNMP receivedPacket = new SNMP();
         receivedPacket.decodeBER(is);
 
-        System.out.println(receivedPacket);
+//        System.out.println(receivedPacket);
 
         return receivedPacket;
     }
