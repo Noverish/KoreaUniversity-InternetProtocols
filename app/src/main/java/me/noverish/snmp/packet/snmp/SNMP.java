@@ -11,7 +11,7 @@ import me.noverish.snmp.packet.pdu.PDU;
 import me.noverish.snmp.packet.pdu.PDUVariable;
 
 public class SNMP implements BERSerializable {
-    public Integer version;
+    public int version;
     public SNMPCommunity community;
     public PDU pdu;
 
@@ -19,7 +19,7 @@ public class SNMP implements BERSerializable {
 
     }
 
-    public SNMP(Integer version, SNMPCommunity community, PDU pdu) {
+    public SNMP(int version, SNMPCommunity community, PDU pdu) {
         this.version = version;
         this.community = community;
         this.pdu = pdu;
