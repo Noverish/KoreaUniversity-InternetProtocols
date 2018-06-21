@@ -1,4 +1,4 @@
-package me.noverish.snmp.packet.snmp;
+package me.noverish.snmp.packet;
 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
@@ -7,19 +7,16 @@ import org.snmp4j.asn1.BERSerializable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import me.noverish.snmp.packet.pdu.PDU;
-import me.noverish.snmp.packet.pdu.PDUVariable;
-
 public class SNMP implements BERSerializable {
     public int version;
-    public SNMPCommunity community;
+    public String community;
     public PDU pdu;
 
     public SNMP() {
 
     }
 
-    public SNMP(int version, SNMPCommunity community, PDU pdu) {
+    public SNMP(int version, String community, PDU pdu) {
         this.version = version;
         this.community = community;
         this.pdu = pdu;
@@ -32,7 +29,7 @@ public class SNMP implements BERSerializable {
 
         BER.encodeHeader(os, BER.SEQUENCE, payloadLength);
         BER.encodeInteger(os, BER.INTEGER, version);
-        community.encodeBER(os);
+        BER.encodeString(os, BER.OCTETSTRING, community.getBytes());
         pdu.encodeBER(os);
     }
 
@@ -42,8 +39,7 @@ public class SNMP implements BERSerializable {
 
         version = BER.decodeInteger(is, new BER.MutableByte());
 
-        community = new SNMPCommunity();
-        community.decodeBER(is);
+        community = new String(BER.decodeString(is, new BER.MutableByte()));
 
         pdu = new PDU();
         pdu.decodeBER(is);
@@ -58,7 +54,7 @@ public class SNMP implements BERSerializable {
     @Override
     public int getBERPayloadLength() {
         int length = pdu.getBERLength();
-        length += community.getBERLength();
+        length += community.getBytes().length + 2;
         length += 3;
         return length;
     }
@@ -69,7 +65,7 @@ public class SNMP implements BERSerializable {
     public String toString() {
         return "{\n" +
                 "  \"version\": " + version + "\n" +
-                "  \"community\": " + community.value + "\n" +
+                "  \"community\": " + community + "\n" +
                 pdu.toString() +
                 "}";
     }

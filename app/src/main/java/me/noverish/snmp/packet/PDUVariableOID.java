@@ -1,4 +1,4 @@
-package me.noverish.snmp.packet.pdu;
+package me.noverish.snmp.packet;
 
 import android.text.TextUtils;
 

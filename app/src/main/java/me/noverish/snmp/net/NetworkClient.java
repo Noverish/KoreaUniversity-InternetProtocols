@@ -10,7 +10,7 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 
-import me.noverish.snmp.packet.snmp.SNMP;
+import me.noverish.snmp.packet.SNMP;
 
 public class NetworkClient {
 

@@ -8,9 +8,9 @@ import java.util.Random;
 
 import me.noverish.snmp.MainActivity;
 import me.noverish.snmp.net.NetworkClient;
-import me.noverish.snmp.packet.pdu.PDUVariableOID;
-import me.noverish.snmp.packet.pdu.PDUType;
-import me.noverish.snmp.packet.snmp.SNMP;
+import me.noverish.snmp.packet.PDUVariableOID;
+import me.noverish.snmp.packet.PDUType;
+import me.noverish.snmp.packet.SNMP;
 import me.noverish.snmp.snmp.utils.SNMPPacketBuilder;
 
 public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {

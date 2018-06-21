@@ -1,4 +1,4 @@
-package me.noverish.snmp.packet.pdu;
+package me.noverish.snmp.packet;
 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;

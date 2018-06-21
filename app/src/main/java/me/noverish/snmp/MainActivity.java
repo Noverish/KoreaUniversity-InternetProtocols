@@ -7,7 +7,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import me.noverish.snmp.packet.snmp.SNMP;
+import me.noverish.snmp.packet.SNMP;
 import me.noverish.snmp.snmp.async_task.SNMPGetAsyncTask;
 import me.noverish.snmp.snmp.async_task.SNMPReceiveListener;
 import me.noverish.snmp.snmp.async_task.SNMPSetAsyncTask;

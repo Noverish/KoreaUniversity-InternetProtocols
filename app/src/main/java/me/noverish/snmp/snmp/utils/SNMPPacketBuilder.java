@@ -3,16 +3,15 @@ package me.noverish.snmp.snmp.utils;
 
 import java.util.ArrayList;
 
-import me.noverish.snmp.packet.pdu.PDUVariableOID;
-import me.noverish.snmp.packet.pdu.PDU;
-import me.noverish.snmp.packet.pdu.PDUType;
-import me.noverish.snmp.packet.pdu.PDUVariableValue;
-import me.noverish.snmp.packet.pdu.PDUVariable;
-import me.noverish.snmp.packet.snmp.SNMPCommunity;
-import me.noverish.snmp.packet.snmp.SNMP;
+import me.noverish.snmp.packet.PDUVariableOID;
+import me.noverish.snmp.packet.PDU;
+import me.noverish.snmp.packet.PDUType;
+import me.noverish.snmp.packet.PDUVariableValue;
+import me.noverish.snmp.packet.PDUVariable;
+import me.noverish.snmp.packet.SNMP;
 
 public class SNMPPacketBuilder {
-    public static SNMP create(String communityStr, PDUType pduType, int requestId, String oidStr, Object obj) {
+    public static SNMP create(String community, PDUType pduType, int requestId, String oidStr, Object obj) {
         PDUVariableOID oid = new PDUVariableOID(oidStr);
         PDUVariableValue value = new PDUVariableValue();
         if (obj instanceof Integer)
@@ -23,8 +22,6 @@ public class SNMPPacketBuilder {
         variables.add(variable);
 
         PDU pdu = new PDU(pduType, requestId, 0, 0, variables);
-
-        SNMPCommunity community = new SNMPCommunity(communityStr);
 
         return new SNMP(1, community, pdu);
     }
