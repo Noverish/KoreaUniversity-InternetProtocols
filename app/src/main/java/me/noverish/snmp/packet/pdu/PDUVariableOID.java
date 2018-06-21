@@ -1,5 +1,7 @@
 package me.noverish.snmp.packet.pdu;
 
+import android.text.TextUtils;
+
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.asn1.BERSerializable;
@@ -52,6 +54,6 @@ public class PDUVariableOID implements BERSerializable {
         ArrayList<String> tmp = new ArrayList<>();
         for (int i : value)
             tmp.add(String.valueOf(i));
-        return String.join(".", tmp);
+        return TextUtils.join(".", tmp);
     }
 }

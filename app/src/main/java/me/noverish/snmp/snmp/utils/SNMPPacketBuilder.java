@@ -15,11 +15,9 @@ import me.noverish.snmp.packet.snmp.SNMPVersion;
 public class SNMPPacketBuilder {
     public static SNMP create(String communityStr, PDUType pduType, int requestId, String oidStr, Object obj) {
         PDUVariableOID oid = new PDUVariableOID(oidStr);
-        PDUVariableValue value;
+        PDUVariableValue value = new PDUVariableValue();
         if (obj instanceof Integer)
-            value = new PDUVariableValue((Integer) obj);
-        else
-            value = new PDUVariableValue();
+            value.intValue = (Integer) obj;
 
         PDUVariable variable = new PDUVariable(oid, value);
         ArrayList<PDUVariable> variables = new ArrayList<>();

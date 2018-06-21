@@ -18,14 +18,6 @@ public class PDUVariableValue implements BERSerializable {
     public Long counter32Value = null;
     public Boolean isEnd = null;
 
-    public PDUVariableValue() {
-
-    }
-
-    public PDUVariableValue(Integer intValue) {
-        this.intValue = intValue;
-    }
-
     // BERSerializable
     @Override
     public void encodeBER(OutputStream os) throws IOException {
