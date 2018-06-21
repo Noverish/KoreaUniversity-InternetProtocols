@@ -10,19 +10,23 @@ import java.io.OutputStream;
 public class SNMPCommunity implements BERSerializable {
     public String value;
 
+    public SNMPCommunity() {
+
+    }
+
     public SNMPCommunity(String value) {
         this.value = value;
     }
 
     // BERSerializable
     @Override
-    public void encodeBER(OutputStream outputStream) throws IOException {
-        BER.encodeString(outputStream, BER.OCTETSTRING, value.getBytes());
+    public void encodeBER(OutputStream os) throws IOException {
+        BER.encodeString(os, BER.OCTETSTRING, value.getBytes());
     }
 
     @Override
-    public void decodeBER(BERInputStream inputStream) throws IOException {
-
+    public void decodeBER(BERInputStream is) throws IOException {
+        value = new String(BER.decodeString(is, new BER.MutableByte()));
     }
 
     @Override

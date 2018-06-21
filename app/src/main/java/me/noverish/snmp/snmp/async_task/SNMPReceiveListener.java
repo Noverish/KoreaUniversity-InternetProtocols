@@ -1,4 +1,4 @@
-package me.noverish.snmp.snmp;
+package me.noverish.snmp.snmp.async_task;
 
 import me.noverish.snmp.packet.snmp.SNMP;
 

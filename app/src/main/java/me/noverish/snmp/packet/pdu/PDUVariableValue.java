@@ -2,14 +2,14 @@ package me.noverish.snmp.packet.pdu;
 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
+import org.snmp4j.asn1.BERSerializable;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import me.noverish.snmp.utils.CustomBERSerializable;
-import me.noverish.snmp.utils.Utils;
+import me.noverish.snmp.snmp.utils.BERLengthUtil;
 
-public class PDUVariableValue implements CustomBERSerializable {
+public class PDUVariableValue implements BERSerializable {
     public Integer intValue = null;
     public String stringValue = null;
     public PDUVariableOID oidValue = null;
@@ -26,42 +26,38 @@ public class PDUVariableValue implements CustomBERSerializable {
         this.intValue = intValue;
     }
 
-    // CustomBERSerializable
+    // BERSerializable
     @Override
     public void encodeBER(OutputStream os) throws IOException {
-        if (intValue != null) {
+        if (intValue != null)
             BER.encodeInteger(os, BER.INTEGER, intValue);
-        } else if (stringValue != null) {
+        else if (stringValue != null)
             BER.encodeString(os, BER.OCTETSTRING, stringValue.getBytes());
-        } else if (oidValue != null) {
+        else if (oidValue != null)
             oidValue.encodeBER(os);
-        } else if (timeTickValue != null) {
+        else if (timeTickValue != null)
             BER.encodeUnsignedInteger(os, BER.TIMETICKS, timeTickValue);
-        } else if (gauge32Value != null) {
+        else if (gauge32Value != null)
             BER.encodeUnsignedInteger(os, BER.TIMETICKS, gauge32Value);
-        } else if (counter32Value != null) {
+        else if (counter32Value != null)
             BER.encodeUnsignedInteger(os, BER.TIMETICKS, counter32Value);
-        } else if (isEnd != null) {
+        else if (isEnd != null)
             BER.encodeHeader(os, BER.ENDOFMIBVIEW, getBERPayloadLength());
-        } else {
+        else
             BER.encodeHeader(os, BER.ASN_NULL, getBERPayloadLength());
-        }
     }
 
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
         byte type = is.getBuffer().array()[(int) is.getPosition()];
-//        System.out.println("type : " + type);
 
         switch (type) {
             case BER.INTEGER: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                intValue = BER.decodeInteger(is, valueType);
+                intValue = BER.decodeInteger(is, new BER.MutableByte());
                 break;
             }
             case BER.OCTETSTRING: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                stringValue = new String(BER.decodeString(is, valueType));
+                stringValue = new String(BER.decodeString(is, new BER.MutableByte()));
                 break;
             }
             case BER.OID: {
@@ -70,29 +66,24 @@ public class PDUVariableValue implements CustomBERSerializable {
                 break;
             }
             case BER.TIMETICKS: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                timeTickValue = BER.decodeUnsignedInteger(is, valueType);
+                timeTickValue = BER.decodeUnsignedInteger(is, new BER.MutableByte());
                 break;
             }
             case BER.GAUGE32: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                gauge32Value = BER.decodeUnsignedInteger(is, valueType);
+                gauge32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
                 break;
             }
             case BER.COUNTER32: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                counter32Value = BER.decodeUnsignedInteger(is, valueType);
+                counter32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
                 break;
             }
             case (byte) BER.ENDOFMIBVIEW: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                BER.decodeHeader(is, valueType);
+                BER.decodeHeader(is, new BER.MutableByte());
                 isEnd = true;
                 break;
             }
             case BER.NULL: {
-                BER.MutableByte valueType = new BER.MutableByte();
-                BER.decodeHeader(is, valueType);
+                BER.decodeHeader(is, new BER.MutableByte());
                 break;
             }
             default: {
@@ -104,57 +95,48 @@ public class PDUVariableValue implements CustomBERSerializable {
     @Override
     public int getBERLength() {
         int payloadLength = getBERPayloadLength();
-
-//        if(intValue != null) {
-//            return payloadLength + BER.getBERLengthOfLength(payloadLength) + 1;
-//        } else {
-//            return 2;
-//        }
-
         return payloadLength + BER.getBERLengthOfLength(payloadLength) + 1;
     }
 
     @Override
     public int getBERPayloadLength() {
-        if (intValue != null) {
-            return Utils.getHexLengthOfInteger(intValue);
-        } else if (stringValue != null) {
+        if (intValue != null)
+            return BERLengthUtil.getLengthOfInteger(intValue);
+        else if (stringValue != null)
             return stringValue.length();
-        } else if (oidValue != null) {
+        else if (oidValue != null)
             return oidValue.getBERPayloadLength();
-        } else if (timeTickValue != null) {
-            return Utils.getHexLengthOfLong(timeTickValue);
-        } else if (gauge32Value != null) {
-            return Utils.getHexLengthOfLong(gauge32Value);
-        } else if (counter32Value != null) {
-            return Utils.getHexLengthOfLong(counter32Value);
-        } else if (isEnd != null) {
+        else if (timeTickValue != null)
+            return BERLengthUtil.getLengthOfUnsignedInteger(timeTickValue);
+        else if (gauge32Value != null)
+            return BERLengthUtil.getLengthOfUnsignedInteger(gauge32Value);
+        else if (counter32Value != null)
+            return BERLengthUtil.getLengthOfUnsignedInteger(counter32Value);
+        else if (isEnd != null)
             return 0;
-        } else {
+        else
             return 0;
-        }
     }
 
 
     // toString
     @Override
     public String toString() {
-        if (intValue != null) {
+        if (intValue != null)
             return "{ Integer: " + intValue + " }";
-        } else if (stringValue != null) {
+        else if (stringValue != null)
             return "{ String: " + stringValue + " }";
-        } else if (oidValue != null) {
+        else if (oidValue != null)
             return "{ OID: " + oidValue.toString() + " }";
-        } else if (timeTickValue != null) {
+        else if (timeTickValue != null)
             return "{ TimeTick: " + timeTickValue + " }";
-        } else if (gauge32Value != null) {
+        else if (gauge32Value != null)
             return "{ Gauge32: " + gauge32Value + " }";
-        } else if (counter32Value != null) {
+        else if (counter32Value != null)
             return "{ Counter32: " + counter32Value + " }";
-        } else if (isEnd != null) {
+        else if (isEnd != null)
             return "{ EndOfMibWindow }";
-        } else {
+        else
             return "null";
-        }
     }
 }

@@ -2,15 +2,15 @@ package me.noverish.snmp.packet.pdu;
 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
+import org.snmp4j.asn1.BERSerializable;
 
-import me.noverish.snmp.utils.CustomBERSerializable;
-import me.noverish.snmp.utils.Utils;
+import me.noverish.snmp.snmp.utils.BERLengthUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class PDU implements CustomBERSerializable {
+public class PDU implements BERSerializable {
     public PDUType type;
     public int requestId;
     public int errorStatus = 0;
@@ -29,7 +29,7 @@ public class PDU implements CustomBERSerializable {
         this.variables = variables;
     }
 
-    // CustomBERSerializable
+    // BERSerializable
     @Override
     public void encodeBER(OutputStream os) throws IOException {
         BER.encodeHeader(os, type.getValue(), getBERPayloadLength());
@@ -50,22 +50,14 @@ public class PDU implements CustomBERSerializable {
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
         BER.MutableByte pduType = new BER.MutableByte();
-        int length = BER.decodeHeader(is, pduType);
-        int pduStartPos = (int) is.getPosition();
+        BER.decodeHeader(is, pduType);
+        type = PDUType.parse(pduType.getValue());
 
-        type = PDUType.parseValue(pduType.getValue());
+        requestId = BER.decodeInteger(is, new BER.MutableByte());
+        errorStatus = BER.decodeInteger(is, new BER.MutableByte());
+        errorIndex = BER.decodeInteger(is, new BER.MutableByte());
 
-        BER.MutableByte requestIdType = new BER.MutableByte();
-        requestId = BER.decodeInteger(is, requestIdType);
-
-        BER.MutableByte errorStatusType = new BER.MutableByte();
-        errorStatus = BER.decodeInteger(is, errorStatusType);
-
-        BER.MutableByte errorIndexType = new BER.MutableByte();
-        errorIndex = BER.decodeInteger(is, errorIndexType);
-
-        BER.MutableByte variableLengthType = new BER.MutableByte();
-        int variableLength = BER.decodeHeader(is, variableLengthType);
+        int variableLength = BER.decodeHeader(is, new BER.MutableByte());
 
         int startPos = (int) is.getPosition();
         variables = new ArrayList<>();
@@ -74,10 +66,6 @@ public class PDU implements CustomBERSerializable {
             vb.decodeBER(is);
             variables.add(vb);
         }
-
-//        if (BER.isCheckSequenceLength()) {
-//            BER.checkSequenceLength(length, (int) is.getPosition() - pduStartPos, this);
-//        }
     }
 
     @Override
@@ -90,18 +78,18 @@ public class PDU implements CustomBERSerializable {
     public int getBERPayloadLength() {
         int length = 0;
 
-        int variableSequenceLength = 0;
-        for (PDUVariable v : variables)
-            variableSequenceLength += v.getBERLength();
-        length += variableSequenceLength + BER.getBERLengthOfLength(variableSequenceLength) + 1;
-
-        int requestIdLength = Utils.getHexLengthOfInteger(requestId);
-        int errorStatusLength = Utils.getHexLengthOfInteger(errorStatus);
-        int errorIndexLength = Utils.getHexLengthOfInteger(errorIndex);
+        int requestIdLength = BERLengthUtil.getLengthOfInteger(requestId);
+        int errorStatusLength = BERLengthUtil.getLengthOfInteger(errorStatus);
+        int errorIndexLength = BERLengthUtil.getLengthOfInteger(errorIndex);
 
         length += requestIdLength + BER.getBERLengthOfLength(requestIdLength) + 1;
         length += errorStatusLength + BER.getBERLengthOfLength(errorStatusLength) + 1;
         length += errorIndexLength + BER.getBERLengthOfLength(errorIndexLength) + 1;
+
+        int variableSequenceLength = 0;
+        for (PDUVariable v : variables)
+            variableSequenceLength += v.getBERLength();
+        length += variableSequenceLength + BER.getBERLengthOfLength(variableSequenceLength) + 1;
 
         return length;
     }

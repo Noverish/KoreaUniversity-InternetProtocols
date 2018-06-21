@@ -8,10 +8,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import me.noverish.snmp.packet.snmp.SNMP;
-import me.noverish.snmp.snmp.SNMPGetAsyncTask;
-import me.noverish.snmp.snmp.SNMPReceiveListener;
-import me.noverish.snmp.snmp.SNMPSetAsyncTask;
-import me.noverish.snmp.snmp.SNMPWalkAsyncTask;
+import me.noverish.snmp.snmp.async_task.SNMPGetAsyncTask;
+import me.noverish.snmp.snmp.async_task.SNMPReceiveListener;
+import me.noverish.snmp.snmp.async_task.SNMPSetAsyncTask;
+import me.noverish.snmp.snmp.async_task.SNMPWalkAsyncTask;
 
 public class MainActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package me.noverish.snmp.snmp;
+package me.noverish.snmp.snmp.async_task;
 
 import android.os.AsyncTask;
 
@@ -6,32 +6,32 @@ import java.io.IOException;
 import java.util.Random;
 
 import me.noverish.snmp.MainActivity;
+import me.noverish.snmp.net.NetworkClient;
 import me.noverish.snmp.packet.pdu.PDUType;
 import me.noverish.snmp.packet.snmp.SNMP;
-import me.noverish.snmp.utils.SNMPHelper;
-import me.noverish.snmp.utils.SNMPPacketBuilder;
+import me.noverish.snmp.snmp.utils.SNMPPacketBuilder;
 
-public class SNMPSetAsyncTask extends AsyncTask<Void, Void, SNMP> {
+public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
 
-    private SNMP packet;
     private SNMPReceiveListener listener;
+    private SNMP packet;
 
-    public SNMPSetAsyncTask(String oid, int value) {
+    public SNMPGetAsyncTask(String oid) {
         int requestId = new Random().nextInt(0x7FFFFFFF);
 
         packet = SNMPPacketBuilder.create(
-                MainActivity.COMMUNITY_WRITE,
-                PDUType.SET_REQUEST,
+                MainActivity.COMMUNITY_READ,
+                PDUType.GET_REQUEST,
                 requestId,
                 oid,
-                value
+                null
         );
     }
 
     @Override
     protected SNMP doInBackground(Void... voids) {
         try {
-            return SNMPHelper.sendAndReceive(MainActivity.HOST, MainActivity.PORT, packet);
+            return NetworkClient.sendSNMP(MainActivity.HOST, MainActivity.PORT, packet);
         } catch (IOException ex) {
             return null;
         }
@@ -44,7 +44,7 @@ public class SNMPSetAsyncTask extends AsyncTask<Void, Void, SNMP> {
                 listener.onSNMPPacketReceived(packet);
     }
 
-    public SNMPSetAsyncTask setListener(SNMPReceiveListener listener) {
+    public SNMPGetAsyncTask setListener(SNMPReceiveListener listener) {
         this.listener = listener;
         return this;
     }

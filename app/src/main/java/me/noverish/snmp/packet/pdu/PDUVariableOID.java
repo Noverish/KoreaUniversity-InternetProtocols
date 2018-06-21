@@ -2,15 +2,13 @@ package me.noverish.snmp.packet.pdu;
 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
+import org.snmp4j.asn1.BERSerializable;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import me.noverish.snmp.utils.CustomBERSerializable;
-
-public class PDUVariableOID implements CustomBERSerializable {
-
+public class PDUVariableOID implements BERSerializable {
     public int[] value;
 
     public PDUVariableOID() {
@@ -25,7 +23,7 @@ public class PDUVariableOID implements CustomBERSerializable {
             value[i] = Integer.parseInt(numbers[i]);
     }
 
-    // CustomBERSerializable
+    // BERSerializable
     @Override
     public void encodeBER(OutputStream os) throws IOException {
         BER.encodeOID(os, BER.OID, value);
@@ -33,8 +31,7 @@ public class PDUVariableOID implements CustomBERSerializable {
 
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
-        BER.MutableByte type = new BER.MutableByte();
-        value = BER.decodeOID(is, type);
+        value = BER.decodeOID(is, new BER.MutableByte());
     }
 
     @Override

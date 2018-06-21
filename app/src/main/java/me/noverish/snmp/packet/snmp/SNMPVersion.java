@@ -7,7 +7,7 @@ import org.snmp4j.asn1.BERSerializable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import me.noverish.snmp.utils.Utils;
+import me.noverish.snmp.snmp.utils.BERLengthUtil;
 
 public enum SNMPVersion implements BERSerializable {
     v2c;
@@ -21,7 +21,7 @@ public enum SNMPVersion implements BERSerializable {
         }
     }
 
-    public static SNMPVersion parseValue(int value) {
+    public static SNMPVersion parse(int value) {
         for (SNMPVersion v : SNMPVersion.values())
             if (v.getValue() == value)
                 return v;
@@ -48,6 +48,6 @@ public enum SNMPVersion implements BERSerializable {
 
     @Override
     public int getBERPayloadLength() {
-        return Utils.getHexLengthOfInteger(getValue());
+        return BERLengthUtil.getLengthOfInteger(getValue());
     }
 }

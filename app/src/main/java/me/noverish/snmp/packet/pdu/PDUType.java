@@ -1,13 +1,12 @@
 package me.noverish.snmp.packet.pdu;
 
 import org.snmp4j.asn1.BERInputStream;
+import org.snmp4j.asn1.BERSerializable;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import me.noverish.snmp.utils.CustomBERSerializable;
-
-public enum PDUType implements CustomBERSerializable {
+public enum PDUType implements BERSerializable {
     GET_REQUEST,
     GET_NEXT_REQUEST,
     GET_RESPONSE,
@@ -28,7 +27,7 @@ public enum PDUType implements CustomBERSerializable {
         }
     }
 
-    public static PDUType parseValue(byte value) {
+    public static PDUType parse(byte value) {
         for (PDUType t : PDUType.values())
             if (t.getValue() == value)
                 return t;
@@ -36,7 +35,7 @@ public enum PDUType implements CustomBERSerializable {
         throw new IllegalStateException("Unknown PDU Type Value");
     }
 
-    // CustomBERSerializable
+    // BERSerializable
     @Override
     public void encodeBER(OutputStream os) throws IOException {
 

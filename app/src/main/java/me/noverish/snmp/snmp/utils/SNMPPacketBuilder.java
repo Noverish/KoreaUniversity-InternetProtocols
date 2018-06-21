@@ -1,4 +1,4 @@
-package me.noverish.snmp.utils;
+package me.noverish.snmp.snmp.utils;
 
 
 import java.util.ArrayList;

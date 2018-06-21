@@ -2,15 +2,15 @@ package me.noverish.snmp.packet.snmp;
 
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
+import org.snmp4j.asn1.BERSerializable;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import me.noverish.snmp.packet.pdu.PDU;
 import me.noverish.snmp.packet.pdu.PDUVariable;
-import me.noverish.snmp.utils.CustomBERSerializable;
 
-public class SNMP implements CustomBERSerializable {
+public class SNMP implements BERSerializable {
     public SNMPVersion version;
     public SNMPCommunity community;
     public PDU pdu;
@@ -25,7 +25,7 @@ public class SNMP implements CustomBERSerializable {
         this.pdu = pdu;
     }
 
-    // CustomBERSerializable
+    // BERSerializable
     @Override
     public void encodeBER(OutputStream os) throws IOException {
         int payloadLength = getBERPayloadLength();
@@ -38,17 +38,13 @@ public class SNMP implements CustomBERSerializable {
 
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
-        BER.MutableByte mutableByte = new BER.MutableByte();
-        int length = BER.decodeHeader(is, mutableByte);
-        int startPos = (int) is.getPosition();
+        BER.decodeHeader(is, new BER.MutableByte());
 
-        BER.MutableByte versionType = new BER.MutableByte();
-        int versionInt = BER.decodeInteger(is, versionType);
-        version = SNMPVersion.parseValue(versionInt);
+        int versionInt = BER.decodeInteger(is, new BER.MutableByte());
+        version = SNMPVersion.parse(versionInt);
 
-        BER.MutableByte communityType = new BER.MutableByte();
-        String communityStr = new String(BER.decodeString(is, communityType));
-        community = new SNMPCommunity(communityStr);
+        community = new SNMPCommunity();
+        community.decodeBER(is);
 
         pdu = new PDU();
         pdu.decodeBER(is);

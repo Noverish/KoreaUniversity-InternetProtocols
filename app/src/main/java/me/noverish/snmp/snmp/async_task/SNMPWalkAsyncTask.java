@@ -1,4 +1,4 @@
-package me.noverish.snmp.snmp;
+package me.noverish.snmp.snmp.async_task;
 
 import android.os.AsyncTask;
 
@@ -7,11 +7,11 @@ import java.net.DatagramSocket;
 import java.util.Random;
 
 import me.noverish.snmp.MainActivity;
+import me.noverish.snmp.net.NetworkClient;
 import me.noverish.snmp.packet.pdu.PDUVariableOID;
 import me.noverish.snmp.packet.pdu.PDUType;
 import me.noverish.snmp.packet.snmp.SNMP;
-import me.noverish.snmp.utils.SNMPHelper;
-import me.noverish.snmp.utils.SNMPPacketBuilder;
+import me.noverish.snmp.snmp.utils.SNMPPacketBuilder;
 
 public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
 
@@ -36,7 +36,7 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
             DatagramSocket socket = new DatagramSocket();
 
             while (true) {
-                SNMP received = SNMPHelper.sendAndReceive(socket, MainActivity.HOST, MainActivity.PORT, packet);
+                SNMP received = NetworkClient.sendSNMP(socket, MainActivity.HOST, MainActivity.PORT, packet);
 
                 publishProgress(received);
 
