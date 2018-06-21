@@ -10,7 +10,6 @@ import me.noverish.snmp.packet.pdu.PDUVariableValue;
 import me.noverish.snmp.packet.pdu.PDUVariable;
 import me.noverish.snmp.packet.snmp.SNMPCommunity;
 import me.noverish.snmp.packet.snmp.SNMP;
-import me.noverish.snmp.packet.snmp.SNMPVersion;
 
 public class SNMPPacketBuilder {
     public static SNMP create(String communityStr, PDUType pduType, int requestId, String oidStr, Object obj) {
@@ -26,8 +25,7 @@ public class SNMPPacketBuilder {
         PDU pdu = new PDU(pduType, requestId, 0, 0, variables);
 
         SNMPCommunity community = new SNMPCommunity(communityStr);
-        SNMPVersion version = SNMPVersion.v2c;
 
-        return new SNMP(version, community, pdu);
+        return new SNMP(1, community, pdu);
     }
 }

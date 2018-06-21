@@ -11,7 +11,7 @@ import me.noverish.snmp.packet.pdu.PDU;
 import me.noverish.snmp.packet.pdu.PDUVariable;
 
 public class SNMP implements BERSerializable {
-    public SNMPVersion version;
+    public Integer version;
     public SNMPCommunity community;
     public PDU pdu;
 
@@ -19,7 +19,7 @@ public class SNMP implements BERSerializable {
 
     }
 
-    public SNMP(SNMPVersion version, SNMPCommunity community, PDU pdu) {
+    public SNMP(Integer version, SNMPCommunity community, PDU pdu) {
         this.version = version;
         this.community = community;
         this.pdu = pdu;
@@ -31,7 +31,7 @@ public class SNMP implements BERSerializable {
         int payloadLength = getBERPayloadLength();
 
         BER.encodeHeader(os, BER.SEQUENCE, payloadLength);
-        version.encodeBER(os);
+        BER.encodeInteger(os, BER.INTEGER, version);
         community.encodeBER(os);
         pdu.encodeBER(os);
     }
@@ -40,8 +40,7 @@ public class SNMP implements BERSerializable {
     public void decodeBER(BERInputStream is) throws IOException {
         BER.decodeHeader(is, new BER.MutableByte());
 
-        int versionInt = BER.decodeInteger(is, new BER.MutableByte());
-        version = SNMPVersion.parse(versionInt);
+        version = BER.decodeInteger(is, new BER.MutableByte());
 
         community = new SNMPCommunity();
         community.decodeBER(is);
@@ -60,7 +59,7 @@ public class SNMP implements BERSerializable {
     public int getBERPayloadLength() {
         int length = pdu.getBERLength();
         length += community.getBERLength();
-        length += version.getBERLength();
+        length += 3;
         return length;
     }
 
@@ -69,7 +68,7 @@ public class SNMP implements BERSerializable {
     @Override
     public String toString() {
         return "{\n" +
-                "  \"version\": " + version.getValue() + "\n" +
+                "  \"version\": " + version + "\n" +
                 "  \"community\": " + community.value + "\n" +
                 pdu.toString() +
                 "}";
