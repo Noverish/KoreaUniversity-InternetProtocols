@@ -54,9 +54,8 @@ public class PDUVariable implements BERSerializable {
     // toString
     @Override
     public String toString() {
-        return "      {\n" +
-                "        \"OID\": " + oid.toString() + "\n" +
-                "        \"value\": " + value.toString() + "\n" +
-                "      }\n";
+        return "            variable:\n" +
+                "                OID: " + oid.toString() + "\n" +
+                "                value: " + value.toString() + "\n";
     }
 }

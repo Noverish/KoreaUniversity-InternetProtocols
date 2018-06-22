@@ -33,7 +33,6 @@ public class PDU implements BERSerializable {
     @Override
     public void encodeBER(OutputStream os) throws IOException {
         BER.encodeHeader(os, type.getValue(), getBERPayloadLength());
-
         BER.encodeInteger(os, BER.INTEGER, requestId);
         BER.encodeInteger(os, BER.INTEGER, errorStatus);
         BER.encodeInteger(os, BER.INTEGER, errorIndex);
@@ -99,20 +98,15 @@ public class PDU implements BERSerializable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-
-        builder.append("  \"pdu\": {\n");
-        builder.append("    \"type\": ").append(type.toString()).append("\n");
-        builder.append("    \"requestId\": ").append(String.format("%X", requestId)).append("\n");
-        builder.append("    \"errorStatus\": ").append(errorStatus).append("\n");
-        builder.append("    \"errorIndex\": ").append(errorIndex).append("\n");
-
-        builder.append("    \"variables\": [\n");
-        for (PDUVariable v : variables) {
+        builder.append("    PDU:\n");
+        builder.append("        type: ").append(type.toString()).append("\n");
+        builder.append("        requestId: ").append(String.format("0x%X", requestId)).append("\n");
+        builder.append("        errorStatus: ").append(errorStatus).append("\n");
+        builder.append("        errorIndex: ").append(errorIndex).append("\n");
+        builder.append("        variables (array):\n");
+        for (PDUVariable v : variables)
             builder.append(v.toString());
-        }
-        builder.append("    ]\n");
 
-        builder.append("  }\n");
         return builder.toString();
     }
 }

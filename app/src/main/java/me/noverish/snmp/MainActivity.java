@@ -3,8 +3,10 @@ package me.noverish.snmp;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import me.noverish.snmp.packet.SNMP;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     public static String COMMUNITY_WRITE = "write";
 
     private EditText oidField, valueField;
+    private Spinner typeSpinner;
     private TextView resultTextView;
     private ScrollView scrollView;
 
@@ -54,8 +57,13 @@ public class MainActivity extends AppCompatActivity {
 
         oidField = findViewById(R.id.oid_field);
         valueField = findViewById(R.id.value_field);
+        typeSpinner = findViewById(R.id.type_spinner);
         resultTextView = findViewById(R.id.result_text_view);
         scrollView = findViewById(R.id.scroll_view);
+
+        ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter.createFromResource(this, R.array.type_array, android.R.layout.simple_spinner_item);
+        staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeSpinner.setAdapter(staticAdapter);
     }
 
     private void onGetBtnClicked() {
@@ -64,8 +72,15 @@ public class MainActivity extends AppCompatActivity {
         new SNMPGetAsyncTask(oid)
                 .setListener(new SNMPReceiveListener() {
                     @Override
-                    public void onSNMPPacketReceived(SNMP packet) {
+                    public void onSNMPPacketSent(SNMP packet) {
                         resultTextView.setText(packet.toString());
+                    }
+
+                    @Override
+                    public void onSNMPPacketReceived(SNMP packet) {
+                        String resultString = resultTextView.getText().toString();
+                        resultString += "\n\n" + packet.toString();
+                        resultTextView.setText(resultString);
                     }
                 })
                 .execute();
@@ -73,23 +88,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSetBtnClicked() {
         String oid = oidField.getText().toString();
-        int value = Integer.parseInt(valueField.getText().toString());
+        String valueType = typeSpinner.getSelectedItem().toString();
+        String value = valueField.getText().toString();
 
-        new SNMPSetAsyncTask(oid, value)
+        new SNMPSetAsyncTask(oid, valueType, value)
                 .setListener(new SNMPReceiveListener() {
                     @Override
-                    public void onSNMPPacketReceived(SNMP packet) {
+                    public void onSNMPPacketSent(SNMP packet) {
                         resultTextView.setText(packet.toString());
+                    }
+
+                    @Override
+                    public void onSNMPPacketReceived(SNMP packet) {
+                        String resultString = resultTextView.getText().toString();
+                        resultString += "\n\n" + packet.toString();
+                        resultTextView.setText(resultString);
                     }
                 })
                 .execute();
     }
 
     private void onWalkBtnClicked() {
-        resultTextView.setText("");
-
         new SNMPWalkAsyncTask()
                 .setListener(new SNMPReceiveListener() {
+                    @Override
+                    public void onSNMPPacketSent(SNMP packet) {
+                        resultTextView.setText("");
+                    }
+
                     @Override
                     public void onSNMPPacketReceived(final SNMP packet) {
                         String tmp = resultTextView.getText().toString();

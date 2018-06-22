@@ -1,5 +1,7 @@
 package me.noverish.snmp.net;
 
+import android.support.v4.content.res.TypedArrayUtils;
+
 import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.asn1.BEROutputStream;
 
@@ -32,6 +34,8 @@ public class NetworkClient {
         packet.encodeBER(os);
         byte[] bytes = os.getBuffer().array();
 
+        printBytes(bytes);
+
         byte[] receivedBytes = NetworkClient.sendUDP(socket, host, port, bytes);
 
         BERInputStream is = new BERInputStream(ByteBuffer.wrap(receivedBytes));
@@ -60,5 +64,29 @@ public class NetworkClient {
                 ex.printStackTrace();
             }
         }
+    }
+
+    private static void printBytes(byte[] bytes) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("    \n");
+
+        byte[] padding = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        byte[] newBytes = new byte[padding.length + bytes.length];
+        System.arraycopy(padding, 0, newBytes, 0, padding.length);
+        System.arraycopy(bytes, 0, newBytes, padding.length, bytes.length);
+
+        for (int i = 0; i < newBytes.length; i++) {
+            byte b = newBytes[i];
+            builder.append(String.format("%02x ", b));
+
+            if (i % 8 == 7)
+                if (i % 16 == 15) {
+                    builder.append("\n");
+                } else {
+                    builder.append(" ");
+                }
+        }
+
+        System.out.println(builder.toString());
     }
 }

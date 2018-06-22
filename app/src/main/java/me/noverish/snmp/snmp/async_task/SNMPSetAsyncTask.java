@@ -16,7 +16,7 @@ public class SNMPSetAsyncTask extends AsyncTask<Void, Void, SNMP> {
     private SNMP packet;
     private SNMPReceiveListener listener;
 
-    public SNMPSetAsyncTask(String oid, int value) {
+    public SNMPSetAsyncTask(String oid, String valueType, String value) {
         int requestId = new Random().nextInt(0x7FFFFFFF);
 
         packet = SNMPPacketBuilder.create(
@@ -24,8 +24,15 @@ public class SNMPSetAsyncTask extends AsyncTask<Void, Void, SNMP> {
                 PDUType.SET_REQUEST,
                 requestId,
                 oid,
+                valueType,
                 value
         );
+    }
+
+    @Override
+    protected void onPreExecute() {
+        if (listener != null && packet != null)
+            listener.onSNMPPacketSent(packet);
     }
 
     @Override
@@ -39,9 +46,8 @@ public class SNMPSetAsyncTask extends AsyncTask<Void, Void, SNMP> {
 
     @Override
     protected void onPostExecute(SNMP packet) {
-        if (listener != null)
-            if (packet != null)
-                listener.onSNMPPacketReceived(packet);
+        if (listener != null && packet != null)
+            listener.onSNMPPacketReceived(packet);
     }
 
     public SNMPSetAsyncTask setListener(SNMPReceiveListener listener) {

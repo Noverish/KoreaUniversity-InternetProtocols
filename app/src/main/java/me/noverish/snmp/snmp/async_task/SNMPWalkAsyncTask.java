@@ -25,9 +25,14 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
                 MainActivity.COMMUNITY_READ,
                 PDUType.GET_NEXT_REQUEST,
                 requestId,
-                "1.3.6.1.2.1",
-                null
+                "1.3.6.1.2.1"
         );
+    }
+
+    @Override
+    protected void onPreExecute() {
+        if (listener != null && packet != null)
+            listener.onSNMPPacketSent(packet);
     }
 
     @Override
@@ -55,10 +60,8 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
     @Override
     protected void onProgressUpdate(SNMP... packets) {
         SNMP packet = packets[0];
-
-        if (listener != null)
-            if (packet != null)
-                listener.onSNMPPacketReceived(packet);
+        if (listener != null && packet != null)
+            listener.onSNMPPacketReceived(packet);
     }
 
     public SNMPWalkAsyncTask setListener(SNMPReceiveListener listener) {

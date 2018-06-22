@@ -23,9 +23,14 @@ public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
                 MainActivity.COMMUNITY_READ,
                 PDUType.GET_REQUEST,
                 requestId,
-                oid,
-                null
+                oid
         );
+    }
+
+    @Override
+    protected void onPreExecute() {
+        if (listener != null && packet != null)
+            listener.onSNMPPacketSent(packet);
     }
 
     @Override
@@ -39,9 +44,8 @@ public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
 
     @Override
     protected void onPostExecute(SNMP packet) {
-        if (listener != null)
-            if (packet != null)
-                listener.onSNMPPacketReceived(packet);
+        if (listener != null && packet != null)
+            listener.onSNMPPacketReceived(packet);
     }
 
     public SNMPGetAsyncTask setListener(SNMPReceiveListener listener) {

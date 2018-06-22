@@ -16,6 +16,9 @@ public class PDUVariableValue implements BERSerializable {
     public Long timeTickValue = null;
     public Long gauge32Value = null;
     public Long counter32Value = null;
+
+    public Boolean noSuchObject = null;
+    public Boolean noSuchInstance = null;
     public Boolean isEnd = null;
 
     // BERSerializable
@@ -33,6 +36,10 @@ public class PDUVariableValue implements BERSerializable {
             BER.encodeUnsignedInteger(os, BER.TIMETICKS, gauge32Value);
         else if (counter32Value != null)
             BER.encodeUnsignedInteger(os, BER.TIMETICKS, counter32Value);
+        else if (noSuchObject != null)
+            BER.encodeHeader(os, BER.NOSUCHOBJECT, getBERPayloadLength());
+        else if (noSuchInstance != null)
+            BER.encodeHeader(os, BER.NOSUCHINSTANCE, getBERPayloadLength());
         else if (isEnd != null)
             BER.encodeHeader(os, BER.ENDOFMIBVIEW, getBERPayloadLength());
         else
@@ -69,13 +76,23 @@ public class PDUVariableValue implements BERSerializable {
                 counter32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
                 break;
             }
+            case BER.NULL: {
+                BER.decodeHeader(is, new BER.MutableByte());
+                break;
+            }
+            case (byte) BER.NOSUCHOBJECT: {
+                BER.decodeHeader(is, new BER.MutableByte());
+                noSuchObject = true;
+                break;
+            }
+            case (byte) BER.NOSUCHINSTANCE: {
+                BER.decodeHeader(is, new BER.MutableByte());
+                noSuchInstance = true;
+                break;
+            }
             case (byte) BER.ENDOFMIBVIEW: {
                 BER.decodeHeader(is, new BER.MutableByte());
                 isEnd = true;
-                break;
-            }
-            case BER.NULL: {
-                BER.decodeHeader(is, new BER.MutableByte());
                 break;
             }
             default: {
@@ -104,7 +121,7 @@ public class PDUVariableValue implements BERSerializable {
             return BERLengthUtil.getLengthOfUnsignedInteger(gauge32Value);
         else if (counter32Value != null)
             return BERLengthUtil.getLengthOfUnsignedInteger(counter32Value);
-        else if (isEnd != null)
+        else if (noSuchObject != null || noSuchInstance != null || isEnd != null)
             return 0;
         else
             return 0;
@@ -126,6 +143,10 @@ public class PDUVariableValue implements BERSerializable {
             return "{ Gauge32: " + gauge32Value + " }";
         else if (counter32Value != null)
             return "{ Counter32: " + counter32Value + " }";
+        else if (noSuchObject != null)
+            return "{ NoSuchObject }";
+        else if (noSuchInstance != null)
+            return "{ NoSuchInstance }";
         else if (isEnd != null)
             return "{ EndOfMibWindow }";
         else

@@ -63,11 +63,10 @@ public class SNMP implements BERSerializable {
     // toString
     @Override
     public String toString() {
-        return "{\n" +
-                "  \"version\": " + version + "\n" +
-                "  \"community\": " + community + "\n" +
-                pdu.toString() +
-                "}";
+        return "SNMP: \n" +
+                "    version: v2c\n" +
+                "    community: " + community + "\n" +
+                pdu.toString();
     }
 
     public String toSimpleString() {

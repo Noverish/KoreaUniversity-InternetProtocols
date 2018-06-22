@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">SNMP</string>
+
+    <string name="snmp_get">SNMP GET</string>
+    <string name="snmp_set">SNMP SET</string>
+    <string name="snmp_walk">SNMP WALK</string>
+    <string name="snmp_stop">SNMP WALK STOP</string>
+
+    <string-array name="type_array">
+        <item>Integer</item>
+        <item>String</item>
+        <item>ObjectID</item>
+        <item>TimeTick</item>
+        <item>Gauge32</item>
+        <item>Counter32</item>
+    </string-array>
 </resources>
