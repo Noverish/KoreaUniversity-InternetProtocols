@@ -6,7 +6,7 @@ import org.snmp4j.asn1.BERSerializable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public enum PDUType implements BERSerializable {
+public enum PDUType {
     GET_REQUEST,
     GET_NEXT_REQUEST,
     GET_RESPONSE,
@@ -33,27 +33,6 @@ public enum PDUType implements BERSerializable {
                 return t;
 
         throw new IllegalStateException("Unknown PDU Type Value");
-    }
-
-    // BERSerializable
-    @Override
-    public void encodeBER(OutputStream os) throws IOException {
-
-    }
-
-    @Override
-    public void decodeBER(BERInputStream is) throws IOException {
-
-    }
-
-    @Override
-    public int getBERLength() {
-        return 0;
-    }
-
-    @Override
-    public int getBERPayloadLength() {
-        return 0;
     }
 
 

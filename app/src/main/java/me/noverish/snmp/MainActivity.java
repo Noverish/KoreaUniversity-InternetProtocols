@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import me.noverish.snmp.packet.SNMP;
 import me.noverish.snmp.snmp.async_task.SNMPGetAsyncTask;
-import me.noverish.snmp.snmp.async_task.SNMPReceiveListener;
+import me.noverish.snmp.snmp.async_task.SNMPPacketCallback;
 import me.noverish.snmp.snmp.async_task.SNMPSetAsyncTask;
 import me.noverish.snmp.snmp.async_task.SNMPWalkAsyncTask;
 
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         resultTextView = findViewById(R.id.result_text_view);
         scrollView = findViewById(R.id.scroll_view);
 
+        // Configure PDU Variable Value Type Select DropDown Menu
         ArrayAdapter<CharSequence> staticAdapter = ArrayAdapter.createFromResource(this, R.array.type_array, android.R.layout.simple_spinner_item);
         staticAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeSpinner.setAdapter(staticAdapter);
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         String oid = oidField.getText().toString();
 
         new SNMPGetAsyncTask(oid)
-                .setListener(new SNMPReceiveListener() {
+                .setCallback(new SNMPPacketCallback() {
                     @Override
                     public void onSNMPPacketSent(SNMP packet) {
                         resultTextView.setText(packet.toString());
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSNMPPacketReceived(SNMP packet) {
                         String resultString = resultTextView.getText().toString();
-                        resultString += "\n\n" + packet.toString();
+                        resultString += "\n" + packet.toString();
                         resultTextView.setText(resultString);
                     }
                 })
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         String value = valueField.getText().toString();
 
         new SNMPSetAsyncTask(oid, valueType, value)
-                .setListener(new SNMPReceiveListener() {
+                .setCallback(new SNMPPacketCallback() {
                     @Override
                     public void onSNMPPacketSent(SNMP packet) {
                         resultTextView.setText(packet.toString());
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSNMPPacketReceived(SNMP packet) {
                         String resultString = resultTextView.getText().toString();
-                        resultString += "\n\n" + packet.toString();
+                        resultString += "\n" + packet.toString();
                         resultTextView.setText(resultString);
                     }
                 })
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onWalkBtnClicked() {
         new SNMPWalkAsyncTask()
-                .setListener(new SNMPReceiveListener() {
+                .setCallback(new SNMPPacketCallback() {
                     @Override
                     public void onSNMPPacketSent(SNMP packet) {
                         resultTextView.setText("");

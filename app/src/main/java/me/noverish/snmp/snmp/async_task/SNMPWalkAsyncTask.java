@@ -16,7 +16,7 @@ import me.noverish.snmp.snmp.utils.SNMPPacketBuilder;
 public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
 
     private SNMP packet;
-    private SNMPReceiveListener listener;
+    private SNMPPacketCallback callback;
 
     public SNMPWalkAsyncTask() {
         int requestId = new Random().nextInt(0x7FFFFFFF);
@@ -27,12 +27,6 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
                 requestId,
                 "1.3.6.1.2.1"
         );
-    }
-
-    @Override
-    protected void onPreExecute() {
-        if (listener != null && packet != null)
-            listener.onSNMPPacketSent(packet);
     }
 
     @Override
@@ -50,7 +44,7 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
                 }
 
                 packet.pdu.requestId += 1;
-                packet.pdu.variables.get(0).oid = new PDUVariableOID(received.pdu.variables.get(0).oid.toString());
+                packet.pdu.variables.get(0).oid = received.pdu.variables.get(0).oid;
             }
         } catch (IOException ex) {
             return null;
@@ -58,14 +52,20 @@ public class SNMPWalkAsyncTask extends AsyncTask<Void, SNMP, SNMP> {
     }
 
     @Override
-    protected void onProgressUpdate(SNMP... packets) {
-        SNMP packet = packets[0];
-        if (listener != null && packet != null)
-            listener.onSNMPPacketReceived(packet);
+    protected void onPreExecute() {
+        if (callback != null && packet != null)
+            callback.onSNMPPacketSent(packet);
     }
 
-    public SNMPWalkAsyncTask setListener(SNMPReceiveListener listener) {
-        this.listener = listener;
+    @Override
+    protected void onProgressUpdate(SNMP... packets) {
+        SNMP packet = packets[0];
+        if (callback != null && packet != null)
+            callback.onSNMPPacketReceived(packet);
+    }
+
+    public SNMPWalkAsyncTask setCallback(SNMPPacketCallback listener) {
+        this.callback = listener;
         return this;
     }
 }

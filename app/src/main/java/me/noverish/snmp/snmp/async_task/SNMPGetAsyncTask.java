@@ -13,8 +13,8 @@ import me.noverish.snmp.snmp.utils.SNMPPacketBuilder;
 
 public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
 
-    private SNMPReceiveListener listener;
     private SNMP packet;
+    private SNMPPacketCallback callback;
 
     public SNMPGetAsyncTask(String oid) {
         int requestId = new Random().nextInt(0x7FFFFFFF);
@@ -28,12 +28,6 @@ public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
     }
 
     @Override
-    protected void onPreExecute() {
-        if (listener != null && packet != null)
-            listener.onSNMPPacketSent(packet);
-    }
-
-    @Override
     protected SNMP doInBackground(Void... voids) {
         try {
             return NetworkClient.sendSNMP(MainActivity.HOST, MainActivity.PORT, packet);
@@ -43,13 +37,19 @@ public class SNMPGetAsyncTask extends AsyncTask<Void, Void, SNMP> {
     }
 
     @Override
-    protected void onPostExecute(SNMP packet) {
-        if (listener != null && packet != null)
-            listener.onSNMPPacketReceived(packet);
+    protected void onPreExecute() {
+        if (callback != null && packet != null)
+            callback.onSNMPPacketSent(packet);
     }
 
-    public SNMPGetAsyncTask setListener(SNMPReceiveListener listener) {
-        this.listener = listener;
+    @Override
+    protected void onPostExecute(SNMP packet) {
+        if (callback != null && packet != null)
+            callback.onSNMPPacketReceived(packet);
+    }
+
+    public SNMPGetAsyncTask setCallback(SNMPPacketCallback listener) {
+        this.callback = listener;
         return this;
     }
 }

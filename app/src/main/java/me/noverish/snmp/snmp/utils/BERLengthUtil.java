@@ -1,6 +1,7 @@
 package me.noverish.snmp.snmp.utils;
 
 public class BERLengthUtil {
+    // Get BER Length of given integer
     public static int getLengthOfInteger(int integer) {
         int mask;
         int intsize = 4;
@@ -21,6 +22,7 @@ public class BERLengthUtil {
         return intsize;
     }
 
+    // Get BER Length of given unsigned integer
     public static int getLengthOfUnsignedInteger(long value) {
         int LENMASK = 0x0ff;
 

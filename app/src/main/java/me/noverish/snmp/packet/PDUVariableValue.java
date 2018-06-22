@@ -1,5 +1,7 @@
 package me.noverish.snmp.packet;
 
+import android.support.annotation.Nullable;
+
 import org.snmp4j.asn1.BER;
 import org.snmp4j.asn1.BERInputStream;
 import org.snmp4j.asn1.BERSerializable;
@@ -20,6 +22,34 @@ public class PDUVariableValue implements BERSerializable {
     public Boolean noSuchObject = null;
     public Boolean noSuchInstance = null;
     public Boolean isEnd = null;
+
+    public PDUVariableValue() {
+
+    }
+
+    public PDUVariableValue(@Nullable String valueType, @Nullable String value) {
+        if (valueType != null && value != null)
+            switch (valueType) {
+                case "Integer":
+                    intValue = Integer.parseInt(value);
+                    break;
+                case "String":
+                    stringValue = value;
+                    break;
+                case "ObjectID":
+                    oidValue = new PDUVariableOID(value);
+                    break;
+                case "TimeTick":
+                    timeTickValue = Long.parseLong(value);
+                    break;
+                case "Gauge32":
+                    gauge32Value = Long.parseLong(value);
+                    break;
+                case "Counter32":
+                    counter32Value = Long.parseLong(value);
+                    break;
+            }
+    }
 
     // BERSerializable
     @Override
@@ -49,55 +79,30 @@ public class PDUVariableValue implements BERSerializable {
     @Override
     public void decodeBER(BERInputStream is) throws IOException {
         byte type = is.getBuffer().array()[(int) is.getPosition()];
-
-        switch (type) {
-            case BER.INTEGER: {
-                intValue = BER.decodeInteger(is, new BER.MutableByte());
-                break;
-            }
-            case BER.OCTETSTRING: {
-                stringValue = new String(BER.decodeString(is, new BER.MutableByte()));
-                break;
-            }
-            case BER.OID: {
-                oidValue = new PDUVariableOID();
-                oidValue.decodeBER(is);
-                break;
-            }
-            case BER.TIMETICKS: {
-                timeTickValue = BER.decodeUnsignedInteger(is, new BER.MutableByte());
-                break;
-            }
-            case BER.GAUGE32: {
-                gauge32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
-                break;
-            }
-            case BER.COUNTER32: {
-                counter32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
-                break;
-            }
-            case BER.NULL: {
-                BER.decodeHeader(is, new BER.MutableByte());
-                break;
-            }
-            case (byte) BER.NOSUCHOBJECT: {
-                BER.decodeHeader(is, new BER.MutableByte());
-                noSuchObject = true;
-                break;
-            }
-            case (byte) BER.NOSUCHINSTANCE: {
-                BER.decodeHeader(is, new BER.MutableByte());
-                noSuchInstance = true;
-                break;
-            }
-            case (byte) BER.ENDOFMIBVIEW: {
-                BER.decodeHeader(is, new BER.MutableByte());
-                isEnd = true;
-                break;
-            }
-            default: {
-                throw new IllegalStateException("Unknown PDU Variable Value");
-            }
+        if (type == BER.INTEGER) {
+            intValue = BER.decodeInteger(is, new BER.MutableByte());
+        } else if (type == BER.OCTETSTRING) {
+            stringValue = new String(BER.decodeString(is, new BER.MutableByte()));
+        } else if (type == BER.OID) {
+            oidValue = new PDUVariableOID();
+            oidValue.decodeBER(is);
+        } else if (type == BER.TIMETICKS) {
+            timeTickValue = BER.decodeUnsignedInteger(is, new BER.MutableByte());
+        } else if (type == BER.GAUGE32) {
+            gauge32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
+        } else if (type == BER.COUNTER32) {
+            counter32Value = BER.decodeUnsignedInteger(is, new BER.MutableByte());
+        } else if (type == BER.NULL) {
+            BER.decodeHeader(is, new BER.MutableByte());
+        } else if (type == (byte) BER.NOSUCHOBJECT) {
+            BER.decodeHeader(is, new BER.MutableByte());
+            noSuchObject = true;
+        } else if (type == (byte) BER.NOSUCHINSTANCE) {
+            BER.decodeHeader(is, new BER.MutableByte());
+            noSuchInstance = true;
+        } else if (type == (byte) BER.ENDOFMIBVIEW) {
+            BER.decodeHeader(is, new BER.MutableByte());
+            isEnd = true;
         }
     }
 
